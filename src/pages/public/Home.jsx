@@ -55,41 +55,89 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="courses" id="courses">
-        <h1>Our Courses</h1>
+      <section className="premium-courses" id="courses">
+  <div className="section-header">
+    <span>Our Programs</span>
+    <h1>Courses Designed For Better Results</h1>
+    <p>
+      We currently offer selected high-demand courses. More courses will be
+      added based on student demand and batch availability.
+    </p>
+  </div>
 
-        <div className="course-grid">
-          <div className="course-card">
-            <h2>Mathematics</h2>
-            <p>Strong concepts, practice sheets and regular tests.</p>
-          </div>
+  <div className="premium-course-grid">
+    <div className="premium-course-card featured-course">
+      <div className="course-top">
+        <div className="course-icon">📘</div>
+        <span className="course-badge">Most Popular</span>
+      </div>
 
-          <div className="course-card">
-            <h2>Science</h2>
-            <p>Physics, Chemistry and Biology with practical understanding.</p>
-          </div>
+      <h2>Class 12th Board Preparation</h2>
 
-          <div className="course-card">
-            <h2>Hindi</h2>
-            <p>Grammar, literature and board exam focused preparation.</p>
-          </div>
+      <p>
+        Complete preparation for board exams with concept clarity, regular
+        practice, doubt solving and test series.
+      </p>
 
-          <div className="course-card">
-            <h2>English</h2>
-            <p>Grammar, writing skills, speaking and literature support.</p>
-          </div>
+      <div className="course-points">
+        <span>Maths</span>
+        <span>Science</span>
+        <span>English</span>
+      </div>
+    </div>
 
-          <div className="course-card">
-            <h2>JEE Foundation</h2>
-            <p>Focused preparation for engineering entrance exams.</p>
-          </div>
+    <div className="premium-course-card">
+      <div className="course-top">
+        <div className="course-icon">🧪</div>
+        <span className="course-badge">Foundation</span>
+      </div>
 
-          <div className="course-card">
-            <h2>Class 12th</h2>
-            <p>Complete board exam preparation with doubt sessions.</p>
-          </div>
-        </div>
-      </section>
+      <h2>Science Foundation</h2>
+
+      <p>
+        Strong foundation in Physics, Chemistry and Biology for school exams
+        and future competitive preparation.
+      </p>
+
+      <div className="course-points">
+        <span>Physics</span>
+        <span>Chemistry</span>
+        <span>Biology</span>
+      </div>
+    </div>
+
+    <div className="premium-course-card">
+      <div className="course-top">
+        <div className="course-icon">📐</div>
+        <span className="course-badge">Concept Based</span>
+      </div>
+
+      <h2>Mathematics Mastery</h2>
+
+      <p>
+        Build strong mathematical concepts with daily problem solving,
+        assignments and exam-oriented practice.
+      </p>
+
+      <div className="course-points">
+        <span>Algebra</span>
+        <span>Calculus</span>
+        <span>Practice</span>
+      </div>
+    </div>
+  </div>
+
+  <div className="course-note">
+    <p>
+      Need another subject or custom batch? New courses are added according to
+      student demand.
+    </p>
+
+    <a href="#contact">
+      <button>Request Course</button>
+    </a>
+  </div>
+</section>
 
       <section className="courses" id="faculty">
         <h1>Our Faculty</h1>
@@ -114,6 +162,75 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <section className="rank-section" id="rankers">
+  <div className="section-header rank-header">
+    <span>Success Stories</span>
+    <h1>Our Proud Rank Holders</h1>
+    <p>
+      Students who trusted TechesPals and achieved excellent results with
+      consistent guidance, practice and mentorship.
+    </p>
+  </div>
+
+  <div className="rank-grid">
+    <div className="rank-card topper-card">
+      <div className="rank-badge">Rank #1</div>
+
+      <div className="student-avatar">AS</div>
+
+      <h2>Aditya Sharma</h2>
+      <p className="rank-course">Class 12th Board</p>
+
+      <div className="score-box">
+        <h3>96.8%</h3>
+        <span>Board Exam Score</span>
+      </div>
+
+      <p className="rank-desc">
+        Achieved outstanding performance through regular tests, doubt sessions
+        and focused revision planning.
+      </p>
+    </div>
+
+    <div className="rank-card">
+      <div className="rank-badge">Top Performer</div>
+
+      <div className="student-avatar">PV</div>
+
+      <h2>Priyanshi Verma</h2>
+      <p className="rank-course">Science Foundation</p>
+
+      <div className="score-box">
+        <h3>94.2%</h3>
+        <span>Academic Score</span>
+      </div>
+
+      <p className="rank-desc">
+        Improved concepts in Physics, Chemistry and Biology with structured
+        practice and mentor support.
+      </p>
+    </div>
+
+    <div className="rank-card">
+      <div className="rank-badge">Maths Star</div>
+
+      <div className="student-avatar">RK</div>
+
+      <h2>Rohit Kumar</h2>
+      <p className="rank-course">Mathematics Mastery</p>
+
+      <div className="score-box">
+        <h3>98/100</h3>
+        <span>Maths Score</span>
+      </div>
+
+      <p className="rank-desc">
+        Scored excellent marks in Mathematics with problem-solving practice and
+        weekly performance tracking.
+      </p>
+    </div>
+  </div>
+</section>
 
     <section className="premium-contact" id="contact">
 
