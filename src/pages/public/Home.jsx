@@ -10,7 +10,7 @@ export default function Home() {
 
         <div className="brand">
           <img
-            src="log.png"
+            src="/log.png"
             alt="TechesPals Logo"
             className="brand-img"
           />
@@ -162,6 +162,138 @@ export default function Home() {
         </div>
 
       </section>
+      {/* TOPPERS SECTION */}
+
+<section className="rank-section" id="rankers">
+
+  <div className="section-header">
+    <span>Success Stories</span>
+
+    <h1>Our Top Rank Holders</h1>
+
+    <p>
+      Students who trusted TechesPals and achieved excellent
+      results with proper guidance and mentorship.
+    </p>
+  </div>
+
+  <div className="rank-grid">
+
+    <div className="rank-card">
+
+      <div className="rank-badge">
+        AIR 12
+      </div>
+
+      <div className="student-avatar">
+        AS
+      </div>
+
+      <h2>Aditya Sharma</h2>
+
+      <p className="rank-course">
+        JEE Advanced
+      </p>
+
+      <div className="score-box">
+        <h3>99.2%</h3>
+        <span>Performance Score</span>
+      </div>
+
+      <p className="rank-desc">
+        Achieved outstanding performance in Mathematics
+        and Physics with consistent practice.
+      </p>
+
+    </div>
+
+    <div className="rank-card">
+
+      <div className="rank-badge">
+        Topper
+      </div>
+
+      <div className="student-avatar">
+        PV
+      </div>
+
+      <h2>Priyanshi Verma</h2>
+
+      <p className="rank-course">
+        Class 12th Boards
+      </p>
+
+      <div className="score-box">
+        <h3>96.8%</h3>
+        <span>Board Percentage</span>
+      </div>
+
+      <p className="rank-desc">
+        Excellent academic consistency with strong
+        command over Science subjects.
+      </p>
+
+    </div>
+
+    <div className="rank-card">
+
+      <div className="rank-badge">
+        Maths Star
+      </div>
+
+      <div className="student-avatar">
+        RK
+      </div>
+
+      <h2>Rohit Kumar</h2>
+
+      <p className="rank-course">
+        Mathematics Mastery
+      </p>
+
+      <div className="score-box">
+        <h3>98/100</h3>
+        <span>Maths Score</span>
+      </div>
+
+      <p className="rank-desc">
+        Solved 500+ advanced level questions and
+        mastered problem solving techniques.
+      </p>
+
+    </div>
+
+    <div className="rank-card">
+
+      <div className="rank-badge">
+        NEET Qualifier
+      </div>
+
+      <div className="student-avatar">
+        AK
+      </div>
+
+      <h2>Anjali Kumari</h2>
+
+      <p className="rank-course">
+        NEET Foundation
+      </p>
+
+      <div className="score-box">
+        <h3>685</h3>
+        <span>NEET Score</span>
+      </div>
+
+      <p className="rank-desc">
+        Strong Biology preparation with regular mock
+        tests and doubt solving sessions.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
 
       {/* FACULTY */}
 
