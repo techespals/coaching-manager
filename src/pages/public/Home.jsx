@@ -4,10 +4,8 @@ export default function Home() {
   return (
     <div>
 
-      section {
-  scroll-margin-top: 130px;
-      }
-
+    
+    
       {/* NAVBAR */}
 
       <nav className="premium-navbar">
