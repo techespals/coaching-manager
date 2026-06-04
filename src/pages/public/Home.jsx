@@ -164,165 +164,111 @@ export default function Home() {
         </div>
 
       </section>
-      {/* TOPPERS SECTION */}
+   
+{/* TOPPERS SECTION */}
 
 <section className="rank-section" id="rankers">
-
   <div className="section-header">
     <span>Success Stories</span>
-
-    <h1>Our Top Rank Holders</h1>
-
-    <p>
-      Students who trusted TechesPals and achieved excellent
-      results with proper guidance and mentorship.
-    </p>
+    <h1>Our Top Performers</h1>
+    <p>Small glimpse of our achievers from different batches.</p>
   </div>
 
-  <div className="rank-grid">
+  <div className="topper-block">
+    <h2>JEE Toppers</h2>
 
-    <div className="rank-card">
+    <div className="topper-grid">
+      {[
+        ["Aditya Sharma", "AIR 12", "99.2%", "/students/student1.jpeg"],
+        ["Rohit Kumar", "AIR 48", "98.7%", "/students/student2.jpeg"],
+        ["Aman Gupta", "AIR 92", "97.8%", "/students/student3.jpeg"],
+        ["Vikas Singh", "AIR 135", "96.9%", "/students/student4.jpeg"],
+      ].map((student, index) => (
+        <div className="topper-mini-card" key={index}>
+          <img src={student[3]} alt={student[0]} />
 
-      <div className="rank-badge">
-        AIR 12
-      </div>
+          <div className="topper-score">
+            <strong>{student[2]}</strong>
+            <span>{student[1]}</span>
+          </div>
 
-      <div className="student-avatar">
-        AS
-      </div>
-
-      <h2>Aditya Sharma</h2>
-
-      <p className="rank-course">
-        JEE Advanced
-      </p>
-
-      <div className="score-box">
-        <h3>99.2%</h3>
-        <span>Performance Score</span>
-      </div>
-
-      <p className="rank-desc">
-        Achieved outstanding performance in Mathematics
-        and Physics with consistent practice.
-      </p>
-
+          <h3>{student[0]}</h3>
+        </div>
+      ))}
     </div>
-
-    <div className="rank-card">
-
-      <div className="rank-badge">
-        Topper
-      </div>
-
-      <div className="student-avatar">
-        PV
-      </div>
-
-      <h2>Priyanshi Verma</h2>
-
-      <p className="rank-course">
-        Class 12th Boards
-      </p>
-
-      <div className="score-box">
-        <h3>96.8%</h3>
-        <span>Board Percentage</span>
-      </div>
-
-      <p className="rank-desc">
-        Excellent academic consistency with strong
-        command over Science subjects.
-      </p>
-
-    </div>
-
-    <div className="rank-card">
-
-      <div className="rank-badge">
-        Maths Star
-      </div>
-
-      <div className="student-avatar">
-        RK
-      </div>
-
-      <h2>Rohit Kumar</h2>
-
-      <p className="rank-course">
-        Mathematics Mastery
-      </p>
-
-      <div className="score-box">
-        <h3>98/100</h3>
-        <span>Maths Score</span>
-      </div>
-
-      <p className="rank-desc">
-        Solved 500+ advanced level questions and
-        mastered problem solving techniques.
-      </p>
-
-    </div>
-
-    <div className="rank-card">
-
-      <div className="rank-badge">
-        NEET Qualifier
-      </div>
-
-      <div className="student-avatar">
-        AK
-      </div>
-
-      <h2>Anjali Kumari</h2>
-
-      <p className="rank-course">
-        NEET Foundation
-      </p>
-
-      <div className="score-box">
-        <h3>685</h3>
-        <span>NEET Score</span>
-      </div>
-
-      <p className="rank-desc">
-        Strong Biology preparation with regular mock
-        tests and doubt solving sessions.
-      </p>
-
-    </div>
-
   </div>
 
+  <div className="topper-block">
+    <h2>NEET Toppers</h2>
+
+    <div className="topper-grid">
+      {[
+        ["Anjali Kumari", "NEET", "685", "/students/student5.jpg"],
+        ["Priya Singh", "NEET", "672", "/students/student6.jpg"],
+        ["Sakshi Verma", "NEET", "668", "/students/student7.jpg"],
+        ["Rahul Yadav", "NEET", "660", "/students/student8.jpg"],
+      ].map((student, index) => (
+        <div className="topper-mini-card" key={index}>
+          <img src={student[3]} alt={student[0]} />
+
+          <div className="topper-score">
+            <strong>{student[2]}</strong>
+            <span>{student[1]}</span>
+          </div>
+
+          <h3>{student[0]}</h3>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div className="topper-block">
+    <h2>Board Toppers</h2>
+
+    <div className="topper-grid">
+      {[
+        ["Priyanshi Verma", "Class 12", "96.8%", "/students/student9.jpg"],
+        ["Ekta Singh", "Class 10", "95.6%", "/students/student10.jpg"],
+        ["Nisha Patel", "Class 12", "94.9%", "/students/student11.jpg"],
+        ["Mohit Kumar", "Class 10", "94.2%", "/students/student12.jpg"],
+      ].map((student, index) => (
+        <div className="topper-mini-card" key={index}>
+          <img src={student[3]} alt={student[0]} />
+
+          <div className="topper-score">
+            <strong>{student[2]}</strong>
+            <span>{student[1]}</span>
+          </div>
+
+          <h3>{student[0]}</h3>
+        </div>
+      ))}
+    </div>
+  </div>
 </section>
 
-      {/* FACULTY */}
+{/* FACULTY */}
 
-      <section className="courses" id="faculty">
+<section className="courses" id="faculty">
+  <h1>Our Faculty</h1>
 
-        <h1>Our Faculty</h1>
+  <div className="course-grid">
+    <div className="course-card">
+      <h2>Rahul Sharma</h2>
+      <p>Maths Faculty</p>
+    </div>
 
-        <div className="course-grid">
+    <div className="course-card">
+      <h2>Ravindra Singh</h2>
+      <p>Science Faculty</p>
+    </div>
 
-          <div className="course-card">
-            <h2>Rahul Sharma</h2>
-            <p>Maths Faculty</p>
-          </div>
-
-          <div className="course-card">
-            <h2>Ravindra Singh</h2>
-            <p>Science Faculty</p>
-          </div>
-
-          <div className="course-card">
-            <h2>Amit Verma</h2>
-            <p>English Faculty</p>
-          </div>
-
-        </div>
-
-      </section>
+    <div className="course-card">
+      <h2>Amit Verma</h2>
+      <p>English Faculty</p>
+    </div>
+  </div>
+</section>
 
       {/* CONTACT */}
 
