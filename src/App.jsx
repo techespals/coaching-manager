@@ -1,12 +1,18 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./pages/public/Home";
+import Batches from "./pages/Batches";
 
 import AdminLogin from "./pages/AdminLogin";
 import StudentLogin from "./pages/StudentLogin";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import StudentDashboard from "./pages/student/StudentDashboard";
+
+import Students from "./pages/Students";
+import Courses from "./pages/Courses";
+import Attendance from "./pages/Attendance";
+import Payments from "./pages/Payments";
 
 function ProtectedAdmin({ children }) {
   const token = localStorage.getItem("token");
@@ -33,14 +39,11 @@ function ProtectedStudent({ children }) {
 export default function App() {
   return (
     <Routes>
-      {/* PUBLIC WEBSITE */}
       <Route path="/" element={<Home />} />
 
-      {/* LOGIN */}
       <Route path="/admin-login" element={<AdminLogin />} />
       <Route path="/student-login" element={<StudentLogin />} />
 
-      {/* ADMIN */}
       <Route
         path="/admin/dashboard"
         element={
@@ -50,7 +53,42 @@ export default function App() {
         }
       />
 
-      {/* STUDENT */}
+      <Route
+        path="/admin/students"
+        element={
+          <ProtectedAdmin>
+            <Students />
+          </ProtectedAdmin>
+        }
+      />
+
+      <Route
+        path="/admin/courses"
+        element={
+          <ProtectedAdmin>
+            <Courses />
+          </ProtectedAdmin>
+        }
+      />
+
+      <Route
+        path="/admin/attendance"
+        element={
+          <ProtectedAdmin>
+            <Attendance />
+          </ProtectedAdmin>
+        }
+      />
+
+      <Route
+        path="/admin/payments"
+        element={
+          <ProtectedAdmin>
+            <Payments />
+          </ProtectedAdmin>
+        }
+      />
+
       <Route
         path="/student/dashboard"
         element={
@@ -59,6 +97,14 @@ export default function App() {
           </ProtectedStudent>
         }
       />
+      <Route
+      path="/admin/batches"
+      element={
+        <ProtectedAdmin>
+          <Batches />
+        </ProtectedAdmin>
+      }
+    />
     </Routes>
   );
 }

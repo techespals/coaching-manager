@@ -33,8 +33,10 @@ export default function AdminLogin() {
 
       navigate("/admin/dashboard");
     } catch (err) {
-      alert("Invalid Credentials");
-    }
+  console.log(err.response?.status);
+  console.log(err.response?.data);
+  alert("Login failed");
+}
   };
 
   return (

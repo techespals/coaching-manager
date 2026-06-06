@@ -30,6 +30,7 @@ export default function StudentLogin() {
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
+      localStorage.setItem("username", data.email);
 
       navigate("/student/dashboard");
     } catch (err) {
@@ -43,11 +44,11 @@ export default function StudentLogin() {
         <h1>Student Login</h1>
 
         <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-        />
+        type="text"
+        name="email"
+        placeholder="Mobile Number"
+        onChange={handleChange}
+      />
 
         <input
           type="password"
