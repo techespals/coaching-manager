@@ -171,11 +171,9 @@ export default function Students() {
     0
   );
 
-  const filteredStudents = students.filter((s) =>
-    `${s.name} ${s.phone} ${s.email}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+  const filteredBatches = batches.filter(
+  (b) => String(b.course?.id) === String(form.courseId)
+);
 
   return (
     <div className="admin-page">
