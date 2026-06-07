@@ -170,6 +170,11 @@ export default function Students() {
     (sum, s) => sum + Number(s.remainingFees || 0),
     0
   );
+  const filteredStudents = students.filter((s) =>
+  `${s.name || ""} ${s.phone || ""} ${s.email || ""}`
+    .toLowerCase()
+    .includes(search.toLowerCase())
+);
 
   const filteredBatches = batches.filter(
   (b) => String(b.course?.id) === String(form.courseId)
