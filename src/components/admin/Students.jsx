@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import api from "../api";
-import { useNavigate } from "react-router-dom";
+import api from "../../api";
+import AdminPageLayout from "./AdminPageLayout";
+import "./Student.css";
 
 export default function Students() {
-  const navigate = useNavigate();
-
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
   const [batches, setBatches] = useState([]);
@@ -85,7 +84,6 @@ export default function Students() {
         batchId: Number(form.batchId),
       });
 
-      alert("Student Added Successfully");
       resetForm();
       fetchStudents();
     } catch (err) {
@@ -127,7 +125,6 @@ export default function Students() {
         batchId: Number(form.batchId),
       });
 
-      alert("Student Updated Successfully");
       resetForm();
       fetchStudents();
     } catch (err) {
@@ -142,7 +139,6 @@ export default function Students() {
 
     try {
       await api.delete(`/owner/students/${id}`);
-      alert("Student Deleted Successfully");
 
       if (editingId === id) {
         resetForm();
@@ -170,49 +166,42 @@ export default function Students() {
     (sum, s) => sum + Number(s.remainingFees || 0),
     0
   );
+
   const filteredStudents = students.filter((s) =>
-  `${s.name || ""} ${s.phone || ""} ${s.email || ""}`
-    .toLowerCase()
-    .includes(search.toLowerCase())
-);
+    `${s.name || ""} ${s.phone || ""} ${s.email || ""}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
 
   const filteredBatches = batches.filter(
-  (b) => String(b.course?.id) === String(form.courseId)
-);
+    (b) => String(b.course?.id) === String(form.courseId)
+  );
 
   return (
-    <div className="admin-page">
-      <div className="page-top">
-        <div>
-          <h1>Students Management</h1>
-          <p>Manage students, fees and pending payments.</p>
-        </div>
-
-        <button type="button" onClick={() => navigate("/admin/dashboard")}>
-          Back Dashboard
-        </button>
-      </div>
-
-      <div className="stats-row">
-        <div className="stat-card">
-          <h3>Total Students</h3>
+    <AdminPageLayout
+      title="Students Management"
+      subtitle="Manage students, fees and pending payments."
+    >
+      <div className="students-stats-row">
+        <div className="student-stat-card">
+          <p>Total Students</p>
           <h2>{students.length}</h2>
         </div>
 
-        <div className="stat-card">
-          <h3>Total Pending Fees</h3>
+        <div className="student-stat-card highlight">
+          <p>Total Pending Fees</p>
           <h2>₹{totalPending}</h2>
         </div>
 
-        <div className="stat-card">
-          <h3>Quick Action</h3>
+        <div className="student-stat-card">
+          <p>Quick Action</p>
           <button type="button" onClick={showPendingFees}>
             Show Pending Fees
           </button>
         </div>
 
-        <div className="stat-card">
-          <h3>View All</h3>
+        <div className="student-stat-card">
+          <p>View All</p>
           <button type="button" onClick={fetchStudents}>
             All Students
           </button>
@@ -220,12 +209,15 @@ export default function Students() {
       </div>
 
       <form
-        className="student-form"
+        className="student-form-card"
         onSubmit={editingId ? updateStudent : addStudent}
       >
-        <h2>{editingId ? "Edit Student" : "Add New Student"}</h2>
+        <div className="section-title">
+          <h2>{editingId ? "Edit Student" : "Add New Student"}</h2>
+          <p>Fill student details and assign course with batch.</p>
+        </div>
 
-        <div className="form-grid">
+        <div className="student-form-grid">
           <input
             name="name"
             placeholder="Student Name"
@@ -297,7 +289,7 @@ export default function Students() {
             required
           >
             <option value="">Select Batch</option>
-            {batches.map((b) => (
+            {filteredBatches.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.batchName}
               </option>
@@ -305,27 +297,34 @@ export default function Students() {
           </select>
         </div>
 
-        <button type="submit" className="main-action">
-          {editingId ? "Update Student" : "Add Student"}
-        </button>
-
-        {editingId && (
-          <button type="button" className="cancel-btn" onClick={resetForm}>
-            Cancel Edit
+        <div className="form-actions">
+          <button type="submit" className="primary-action">
+            {editingId ? "Update Student" : "Add Student"}
           </button>
-        )}
+
+          {editingId && (
+            <button type="button" className="secondary-action" onClick={resetForm}>
+              Cancel Edit
+            </button>
+          )}
+        </div>
       </form>
 
-      <div className="table-card">
-        <h2>Student Records</h2>
+      <div className="student-table-card">
+        <div className="table-header">
+          <div>
+            <h2>Student Records</h2>
+            <p>Search, edit and manage all students.</p>
+          </div>
 
-        <input
-          className="search-input"
-          type="text"
-          placeholder="Search by name, phone or email..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+          <input
+            className="student-search"
+            type="text"
+            placeholder="Search by name, phone or email..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
         <table className="premium-table">
           <thead>
@@ -353,14 +352,14 @@ export default function Students() {
                 <td>₹{s.paidFees}</td>
                 <td className="pending">₹{s.remainingFees}</td>
                 <td>
-                  <span className={`status ${s.feeStatus?.toLowerCase()}`}>
+                  <span className={`fee-status ${s.feeStatus?.toLowerCase()}`}>
                     {s.feeStatus}
                   </span>
                 </td>
-                <td>
+                <td className="table-actions">
                   <button
                     type="button"
-                    className="edit-btn"
+                    className="edit-action"
                     onClick={() => editStudent(s)}
                   >
                     Edit
@@ -368,7 +367,7 @@ export default function Students() {
 
                   <button
                     type="button"
-                    className="delete-btn"
+                    className="danger-action"
                     onClick={() => deleteStudent(s.id)}
                   >
                     Delete
@@ -385,6 +384,6 @@ export default function Students() {
           </tbody>
         </table>
       </div>
-    </div>
+    </AdminPageLayout>
   );
 }

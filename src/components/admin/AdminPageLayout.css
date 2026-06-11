@@ -1,0 +1,43 @@
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #050505;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 32px;
+  min-height: 100vh;
+  overflow-x: auto;
+}
+
+.admin-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.admin-page-header h1 {
+  font-size: 34px;
+  margin: 4px 0;
+}
+
+.admin-page-header span,
+.admin-eyebrow {
+  color: #9ca3af;
+}
+
+.admin-eyebrow {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.admin-header-pill {
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  color: #00e5ff;
+  font-weight: 700;
+}

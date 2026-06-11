@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import api from "../api";
-import { useNavigate } from "react-router-dom";
+import api from "../../api";
+import AdminPageLayout from "./AdminPageLayout";
+import "./Attendance.css";
 
 export default function Attendance() {
-  const navigate = useNavigate();
-
   const [students, setStudents] = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [attendanceMap, setAttendanceMap] = useState({});
@@ -14,7 +13,7 @@ export default function Attendance() {
       const res = await api.get("/owner/students");
       setStudents(res.data);
     } catch (err) {
-      console.log("Students fetch error:", err);
+      console.log("Students fetch error:", err.response?.data);
     }
   };
 
@@ -23,7 +22,7 @@ export default function Attendance() {
       const res = await api.get("/owner/attendance");
       setAttendance(res.data);
     } catch (err) {
-      console.log("Attendance fetch error:", err);
+      console.log("Attendance fetch error:", err.response?.data);
     }
   };
 
@@ -41,10 +40,9 @@ export default function Attendance() {
         });
       }
 
-      alert("Attendance Saved Successfully");
       fetchAttendance();
     } catch (err) {
-      console.log("Save attendance error:", err);
+      console.log("Save attendance error:", err.response?.data);
       alert("Attendance save nahi hui");
     }
   };
@@ -53,42 +51,43 @@ export default function Attendance() {
   const absentCount = students.length - presentCount;
 
   return (
-    <div className="admin-page">
-      <div className="page-top">
-        <div>
-          <h1>Attendance Management</h1>
-          <p>Check present students and save attendance.</p>
-        </div>
-
-        <button type="button" onClick={() => navigate("/admin/dashboard")}>
-          Back Dashboard
-        </button>
-      </div>
-
-      <div className="stats-row">
-        <div className="stat-card">
-          <h3>Total Students</h3>
+    <AdminPageLayout
+      title="Attendance Management"
+      subtitle="Mark daily attendance and track saved attendance records."
+    >
+      <div className="attendance-stats-row">
+        <div className="attendance-stat-card">
+          <p>Total Students</p>
           <h2>{students.length}</h2>
         </div>
 
-        <div className="stat-card">
-          <h3>Present Selected</h3>
+        <div className="attendance-stat-card present">
+          <p>Present Selected</p>
           <h2>{presentCount}</h2>
         </div>
 
-        <div className="stat-card">
-          <h3>Absent Selected</h3>
+        <div className="attendance-stat-card absent">
+          <p>Absent Selected</p>
           <h2>{absentCount}</h2>
         </div>
 
-        <div className="stat-card">
-          <h3>Saved Records</h3>
+        <div className="attendance-stat-card">
+          <p>Saved Records</p>
           <h2>{attendance.length}</h2>
         </div>
       </div>
 
-      <div className="table-card">
-        <h2>Mark Today Attendance</h2>
+      <div className="attendance-table-card">
+        <div className="table-header">
+          <div>
+            <h2>Mark Today Attendance</h2>
+            <p>Select present students and save attendance for today.</p>
+          </div>
+
+          <button type="button" className="primary-action" onClick={saveAttendance}>
+            Save Attendance
+          </button>
+        </div>
 
         <table className="premium-table">
           <thead>
@@ -111,16 +110,19 @@ export default function Attendance() {
                 <td>{s.course?.courseName || "N/A"}</td>
                 <td>{s.batch?.batchName || "N/A"}</td>
                 <td>
-                  <input
-                    type="checkbox"
-                    checked={attendanceMap[s.id] || false}
-                    onChange={(e) =>
-                      setAttendanceMap({
-                        ...attendanceMap,
-                        [s.id]: e.target.checked,
-                      })
-                    }
-                  />
+                  <label className="toggle-check">
+                    <input
+                      type="checkbox"
+                      checked={attendanceMap[s.id] || false}
+                      onChange={(e) =>
+                        setAttendanceMap({
+                          ...attendanceMap,
+                          [s.id]: e.target.checked,
+                        })
+                      }
+                    />
+                    <span></span>
+                  </label>
                 </td>
               </tr>
             ))}
@@ -132,11 +134,7 @@ export default function Attendance() {
             )}
           </tbody>
         </table>
-
-        <button type="button" className="main-action" onClick={saveAttendance}>
-          Save Attendance
-        </button>
       </div>
-    </div>
+    </AdminPageLayout>
   );
 }

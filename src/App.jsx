@@ -1,24 +1,24 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./pages/public/Home";
-import Batches from "./pages/Batches";
 
 import AdminLogin from "./pages/AdminLogin";
 import StudentLogin from "./pages/StudentLogin";
 
-import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminDashboard from "./components/admin/AdminDashboard";
 import StudentDashboard from "./pages/student/StudentDashboard";
 
-import Students from "./pages/Students";
-import Courses from "./pages/Courses";
-import Attendance from "./pages/Attendance";
-import Payments from "./pages/Payments";
+import Students from "./components/admin/Students";
+import Courses from "./components/admin/Courses";
+import Batches from "./components/admin/Batches";
+import Attendance from "./components/admin/Attendance";
+import Payments from "./components/admin/Payments";
 
 function ProtectedAdmin({ children }) {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
-  if (!token || role !== "OWNER") {
+  if (!token || role !== "INSTITUTE_ADMIN") {
     return <Navigate to="/admin-login" />;
   }
 

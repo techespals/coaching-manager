@@ -23,20 +23,23 @@ export default function AdminLogin() {
     try {
       const res = await api.post("/auth/login", data);
 
-      if (res.data.role !== "OWNER") {
+      if (res.data.role !== "INSTITUTE_ADMIN") {
         alert("Not Admin Account");
         return;
       }
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
+      localStorage.setItem("instituteId", res.data.instituteId);
+      localStorage.setItem("name", res.data.name);
+      localStorage.setItem("email", res.data.email);
 
       navigate("/admin/dashboard");
     } catch (err) {
-  console.log(err.response?.status);
-  console.log(err.response?.data);
-  alert("Login failed");
-}
+      console.log(err.response?.status);
+      console.log(err.response?.data);
+      alert("Login failed");
+    }
   };
 
   return (
@@ -48,17 +51,21 @@ export default function AdminLogin() {
           type="email"
           name="email"
           placeholder="Email"
+          value={data.email}
           onChange={handleChange}
+          required
         />
 
         <input
           type="password"
           name="password"
           placeholder="Password"
+          value={data.password}
           onChange={handleChange}
+          required
         />
 
-        <button>Login</button>
+        <button type="submit">Login</button>
       </form>
     </div>
   );
