@@ -13,7 +13,17 @@ import Courses from "./components/admin/Courses";
 import Batches from "./components/admin/Batches";
 import Attendance from "./components/admin/Attendance";
 import Payments from "./components/admin/Payments";
-import SuperAdminDashboard from "./components/Superadmin/SuperAdminDashboard";
+import SuperAdminDashboard from "./components/superadmin/SuperAdminDashboard";
+function ProtectedSuperAdmin({ children }) {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
+  if (!token || role !== "SUPER_ADMIN") {
+    return <Navigate to="/admin-login" />;
+  }
+
+  return children;
+}
 
 function ProtectedAdmin({ children }) {
   const token = localStorage.getItem("token");
