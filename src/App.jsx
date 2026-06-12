@@ -13,7 +13,7 @@ import Courses from "./components/admin/Courses";
 import Batches from "./components/admin/Batches";
 import Attendance from "./components/admin/Attendance";
 import Payments from "./components/admin/Payments";
-import SuperAdminDashboard from "./components/superadmin/SuperAdminDashboard";
+import SuperAdminDashboard from "./components/superadmin/SuperAdminDashboard.jsx";
 function ProtectedSuperAdmin({ children }) {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
