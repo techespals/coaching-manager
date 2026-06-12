@@ -13,6 +13,7 @@ import Courses from "./components/admin/Courses";
 import Batches from "./components/admin/Batches";
 import Attendance from "./components/admin/Attendance";
 import Payments from "./components/admin/Payments";
+import SuperAdminDashboard from "./components/superadmin/SuperAdminDashboard";
 
 function ProtectedAdmin({ children }) {
   const token = localStorage.getItem("token");
@@ -103,6 +104,14 @@ export default function App() {
           <ProtectedAdmin>
             <Batches />
           </ProtectedAdmin>
+        }
+      />
+      <Route
+        path="/super-admin/dashboard"
+        element={
+          <ProtectedSuperAdmin>
+            <SuperAdminDashboard />
+          </ProtectedSuperAdmin>
         }
       />
       </Routes>
