@@ -28,21 +28,28 @@ export default function AdminLogin() {
 
       const res = await api.post("/auth/login", data);
 
-      if (res.data.role !== "INSTITUTE_ADMIN") {
+      if (
+        res.data.role !== "INSTITUTE_ADMIN" &&
+        res.data.role !== "SUPER_ADMIN"
+      ) {
         toast.error("Not an Admin Account");
         return;
       }
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
-      localStorage.setItem("instituteId", res.data.instituteId);
-      localStorage.setItem("name", res.data.name);
-      localStorage.setItem("email", res.data.email);
+      localStorage.setItem("instituteId", res.data.instituteId || "");
+      localStorage.setItem("name", res.data.name || "");
+      localStorage.setItem("email", res.data.email || "");
 
       toast.success("Login Successful");
 
       setTimeout(() => {
-        navigate("/admin/dashboard");
+        if (res.data.role === "SUPER_ADMIN") {
+          navigate("/super-admin/dashboard");
+        } else {
+          navigate("/admin/dashboard");
+        }
       }, 1000);
     } catch (err) {
       console.log(err.response?.status);
