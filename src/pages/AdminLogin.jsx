@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import api from "../api";
 
 export default function AdminLogin() {
@@ -9,6 +10,8 @@ export default function AdminLogin() {
     email: "",
     password: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setData({
@@ -21,10 +24,12 @@ export default function AdminLogin() {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const res = await api.post("/auth/login", data);
 
       if (res.data.role !== "INSTITUTE_ADMIN") {
-        alert("Not Admin Account");
+        toast.error("Not an Admin Account");
         return;
       }
 
@@ -34,11 +39,18 @@ export default function AdminLogin() {
       localStorage.setItem("name", res.data.name);
       localStorage.setItem("email", res.data.email);
 
-      navigate("/admin/dashboard");
+      toast.success("Login Successful");
+
+      setTimeout(() => {
+        navigate("/admin/dashboard");
+      }, 1000);
     } catch (err) {
       console.log(err.response?.status);
       console.log(err.response?.data);
-      alert("Login failed");
+
+      toast.error("Invalid Email or Password");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,7 +77,9 @@ export default function AdminLogin() {
           required
         />
 
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging In..." : "Login"}
+        </button>
       </form>
     </div>
   );

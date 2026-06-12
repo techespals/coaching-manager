@@ -211,3 +211,30 @@
     max-width: 100%;
   }
 }
+.student-photo {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  min-height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  border: 2px solid rgba(0, 188, 212, 0.7);
+}
+
+.premium-table td {
+  vertical-align: middle;
+}
+.table-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.premium-table {
+  width: 100%;
+}
+.student-table-card {
+  overflow-x: auto;
+}

@@ -98,13 +98,13 @@ export default function App() {
         }
       />
       <Route
-      path="/admin/batches"
-      element={
-        <ProtectedAdmin>
-          <Batches />
-        </ProtectedAdmin>
-      }
-    />
-    </Routes>
+        path="/admin/batches"
+        element={
+          <ProtectedAdmin>
+            <Batches />
+          </ProtectedAdmin>
+        }
+      />
+      </Routes>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import api from "../../api";
 import AdminPageLayout from "./AdminPageLayout";
 import "./Payments.css";
@@ -50,6 +51,8 @@ export default function Payments() {
         paymentMode: form.paymentMode,
       });
 
+      toast.success("Payment added successfully");
+
       setForm({
         studentId: "",
         amount: "",
@@ -60,8 +63,282 @@ export default function Payments() {
       fetchPayments();
     } catch (err) {
       console.log("ADD PAYMENT ERROR:", err.response?.data);
-      alert("Payment add nahi hua");
+      toast.error(err.response?.data?.message || "Payment add nahi hua");
     }
+  };
+
+  const exportPaymentsExcel = async () => {
+    try {
+      const response = await api.get("/owner/payments/export", {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "payments.xlsx";
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Payments Excel downloaded");
+    } catch (err) {
+      console.log("EXPORT PAYMENTS ERROR:", err.response?.data || err.message);
+      toast.error("Payments export failed");
+    }
+  };
+
+  const printReceipt = (payment) => {
+    const student = payment.student;
+    const institute = payment.institute;
+
+    const receiptHtml = `
+      <html>
+        <head>
+          <title>Fee Receipt</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              background: #f4f7fb;
+              padding: 30px;
+              color: #111827;
+            }
+
+            .receipt {
+              max-width: 760px;
+              margin: auto;
+              background: #ffffff;
+              border-radius: 18px;
+              padding: 34px;
+              border: 1px solid #e5e7eb;
+            }
+
+            .header {
+              display: flex;
+              justify-content: space-between;
+              border-bottom: 2px solid #00bcd4;
+              padding-bottom: 18px;
+              margin-bottom: 26px;
+            }
+
+            .brand h1 {
+              margin: 0;
+              color: #00a8c8;
+              font-size: 28px;
+            }
+
+            .brand p {
+              margin: 6px 0 0;
+              color: #6b7280;
+            }
+
+            .receipt-no {
+              text-align: right;
+            }
+
+            .receipt-no h3 {
+              margin: 0;
+              color: #111827;
+            }
+
+            .receipt-no p {
+              margin: 6px 0 0;
+              color: #6b7280;
+            }
+
+            .section {
+              margin-bottom: 24px;
+            }
+
+            .section h2 {
+              font-size: 18px;
+              margin-bottom: 12px;
+              color: #111827;
+            }
+
+            .grid {
+              display: grid;
+              grid-template-columns: repeat(2, 1fr);
+              gap: 14px;
+            }
+
+            .item {
+              background: #f9fafb;
+              padding: 14px;
+              border-radius: 12px;
+              border: 1px solid #e5e7eb;
+            }
+
+            .item span {
+              display: block;
+              color: #6b7280;
+              font-size: 13px;
+              margin-bottom: 5px;
+            }
+
+            .item strong {
+              color: #111827;
+              font-size: 15px;
+            }
+
+            .amount-box {
+              margin-top: 24px;
+              padding: 22px;
+              border-radius: 14px;
+              background: linear-gradient(135deg, #00bcd4, #2563eb);
+              color: white;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
+
+            .amount-box span {
+              font-size: 14px;
+              opacity: 0.9;
+            }
+
+            .amount-box h2 {
+              margin: 0;
+              font-size: 32px;
+            }
+
+            .footer {
+              margin-top: 34px;
+              display: flex;
+              justify-content: space-between;
+              align-items: end;
+              color: #6b7280;
+              font-size: 13px;
+            }
+
+            .sign {
+              text-align: center;
+              color: #111827;
+            }
+
+            .line {
+              margin-top: 45px;
+              width: 180px;
+              border-top: 1px solid #111827;
+              padding-top: 8px;
+            }
+
+            @media print {
+              body {
+                background: white;
+              }
+
+              .receipt {
+                border: none;
+              }
+            }
+          </style>
+        </head>
+
+        <body>
+          <div class="receipt">
+            <div class="header">
+              <div class="brand">
+                <h1>${institute?.instituteName || "Coaching Institute"}</h1>
+                <p>${institute?.email || ""} ${institute?.phone ? " | " + institute.phone : ""}</p>
+              </div>
+
+              <div class="receipt-no">
+                <h3>Fee Receipt</h3>
+                <p>${payment.receiptNumber || "RCPT-" + payment.id}</p>
+              </div>
+            </div>
+
+            <div class="section">
+              <h2>Student Details</h2>
+              <div class="grid">
+                <div class="item">
+                  <span>Student Name</span>
+                  <strong>${student?.name || "N/A"}</strong>
+                </div>
+
+                <div class="item">
+                  <span>Phone</span>
+                  <strong>${student?.phone || "N/A"}</strong>
+                </div>
+
+                <div class="item">
+                  <span>Course</span>
+                  <strong>${student?.course?.courseName || "N/A"}</strong>
+                </div>
+
+                <div class="item">
+                  <span>Batch</span>
+                  <strong>${student?.batch?.batchName || "N/A"}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <h2>Payment Details</h2>
+              <div class="grid">
+                <div class="item">
+                  <span>Payment Date</span>
+                  <strong>${payment.paymentDate}</strong>
+                </div>
+
+                <div class="item">
+                  <span>Payment Mode</span>
+                  <strong>${payment.paymentMode}</strong>
+                </div>
+
+                <div class="item">
+                  <span>Total Fees</span>
+                  <strong>₹${student?.totalFees || 0}</strong>
+                </div>
+
+                <div class="item">
+                  <span>Pending After Payment</span>
+                  <strong>₹${student?.remainingFees || 0}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="amount-box">
+              <div>
+                <span>Amount Received</span>
+                <h2>₹${payment.amount}</h2>
+              </div>
+
+              <div>
+                <span>Status</span>
+                <h2>PAID</h2>
+              </div>
+            </div>
+
+            <div class="footer">
+              <p>This is a computer-generated receipt.</p>
+
+              <div class="sign">
+                <div class="line">Authorized Signature</div>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            window.onload = function() {
+              window.print();
+            }
+          </script>
+        </body>
+      </html>
+    `;
+
+    const receiptWindow = window.open("", "_blank");
+    receiptWindow.document.write(receiptHtml);
+    receiptWindow.document.close();
   };
 
   const totalCollected = payments.reduce(
@@ -204,33 +481,53 @@ export default function Payments() {
             <h2>Payment History</h2>
             <p>All fee payments received by this institute.</p>
           </div>
+
+          <button
+            type="button"
+            className="primary-action"
+            onClick={exportPaymentsExcel}
+          >
+            Export Excel
+          </button>
         </div>
 
         <table className="premium-table">
           <thead>
             <tr>
+              <th>Receipt</th>
               <th>Student</th>
               <th>Amount</th>
               <th>Mode</th>
               <th>Date</th>
+              <th>Download</th>
             </tr>
           </thead>
 
           <tbody>
             {payments.map((p) => (
               <tr key={p.id}>
+                <td>{p.receiptNumber || `RCPT-${p.id}`}</td>
                 <td>{p.student?.name}</td>
                 <td>₹{p.amount}</td>
                 <td>
                   <span className="payment-mode">{p.paymentMode}</span>
                 </td>
                 <td>{p.paymentDate}</td>
+                <td>
+                  <button
+                    type="button"
+                    className="receipt-btn"
+                    onClick={() => printReceipt(p)}
+                  >
+                    Receipt
+                  </button>
+                </td>
               </tr>
             ))}
 
             {payments.length === 0 && (
               <tr>
-                <td colSpan="4">No payment history found</td>
+                <td colSpan="6">No payment history found</td>
               </tr>
             )}
           </tbody>

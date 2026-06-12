@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import AdminPageLayout from "./AdminPageLayout";
@@ -15,6 +15,10 @@ export default function AdminDashboard() {
     todayCollection: 0,
     pendingFees: 0,
     pendingStudents: 0,
+    todayPresent: 0,
+    todayAbsent: 0,
+    todayAttendancePercentage: 0,
+    monthlyCollection: {},
     latestStudents: [],
     latestPayments: [],
   });
@@ -35,25 +39,35 @@ export default function AdminDashboard() {
     fetchDashboard();
   }, []);
 
+  const monthlyData = useMemo(() => {
+    return Object.entries(dashboard.monthlyCollection || {});
+  }, [dashboard.monthlyCollection]);
+
+  const maxCollection = Math.max(
+    ...monthlyData.map(([, amount]) => Number(amount || 0)),
+    1
+  );
+
   const quickActions = [
-    { title: "Students", desc: "Manage admissions and records", icon: "👨‍🎓", path: "/admin/students" },
-    { title: "Courses", desc: "Create coaching programs", icon: "📚", path: "/admin/courses" },
-    { title: "Batches", desc: "Manage timings and teachers", icon: "🕒", path: "/admin/batches" },
-    { title: "Attendance", desc: "Mark daily attendance", icon: "✅", path: "/admin/attendance" },
-    { title: "Payments", desc: "Track fees and collections", icon: "💳", path: "/admin/payments" },
+    { title: "Students", desc: "Manage admissions", icon: "👨‍🎓", path: "/admin/students" },
+    { title: "Courses", desc: "Create programs", icon: "📚", path: "/admin/courses" },
+    { title: "Batches", desc: "Manage timings", icon: "🕒", path: "/admin/batches" },
+    { title: "Attendance", desc: "Mark attendance", icon: "✅", path: "/admin/attendance" },
+    { title: "Payments", desc: "Track fees", icon: "💳", path: "/admin/payments" },
   ];
 
   return (
-    <AdminPageLayout
-      title={`Welcome back, ${adminName}`}
-      subtitle={adminEmail}
-    >
+    <AdminPageLayout title={`Welcome back, ${adminName}`} subtitle={adminEmail}>
       <div className="dashboard-hero">
         <div>
           <p>Institute Control Center</p>
-          <h2>Manage your coaching operations from one premium dashboard.</h2>
+          <h2>Manage students, fees, batches, attendance and analytics from one dashboard.</h2>
         </div>
-        <span>Live Analytics</span>
+
+        <div className="hero-attendance">
+          <h3>{Number(dashboard.todayAttendancePercentage || 0).toFixed(0)}%</h3>
+          <span>Today's Attendance</span>
+        </div>
       </div>
 
       <div className="dashboard-stats-grid">
@@ -90,6 +104,60 @@ export default function AdminDashboard() {
         <div className="dash-stat-card warning">
           <p>Pending Students</p>
           <h2>{dashboard.pendingStudents}</h2>
+        </div>
+
+        <div className="dash-stat-card attendance">
+          <p>Today Present / Absent</p>
+          <h2>
+            {dashboard.todayPresent} / {dashboard.todayAbsent}
+          </h2>
+        </div>
+      </div>
+
+      <div className="dashboard-analytics-grid">
+        <div className="analytics-card large">
+          <div className="analytics-header">
+            <div>
+              <h2>Monthly Collection</h2>
+              <p>Fee collection trend across the year.</p>
+            </div>
+          </div>
+
+          <div className="bar-chart">
+            {monthlyData.map(([month, amount]) => {
+              const height = (Number(amount || 0) / maxCollection) * 100;
+
+              return (
+                <div className="bar-item" key={month}>
+                  <div className="bar-track">
+                    <div className="bar-fill" style={{ height: `${height}%` }}></div>
+                  </div>
+                  <span>{month}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="analytics-card">
+          <h2>Attendance Overview</h2>
+
+          <div className="attendance-meter">
+            <h3>{Number(dashboard.todayAttendancePercentage || 0).toFixed(0)}%</h3>
+            <p>Today Attendance</p>
+          </div>
+
+          <div className="attendance-mini">
+            <div>
+              <span>Present</span>
+              <strong>{dashboard.todayPresent}</strong>
+            </div>
+
+            <div>
+              <span>Absent</span>
+              <strong>{dashboard.todayAbsent}</strong>
+            </div>
+          </div>
         </div>
       </div>
 

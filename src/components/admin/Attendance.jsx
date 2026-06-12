@@ -4,61 +4,176 @@ import AdminPageLayout from "./AdminPageLayout";
 import "./Attendance.css";
 
 export default function Attendance() {
+  const today = new Date().toISOString().split("T")[0];
+
   const [students, setStudents] = useState([]);
-  const [attendance, setAttendance] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [batches, setBatches] = useState([]);
+  const [savedAttendance, setSavedAttendance] = useState([]);
   const [attendanceMap, setAttendanceMap] = useState({});
 
-  const fetchStudents = async () => {
-    try {
-      const res = await api.get("/owner/students");
-      setStudents(res.data);
-    } catch (err) {
-      console.log("Students fetch error:", err.response?.data);
-    }
-  };
+  const [filters, setFilters] = useState({
+    courseId: "",
+    batchId: "",
+    date: today,
+  });
 
-  const fetchAttendance = async () => {
+  const fetchInitialData = async () => {
     try {
-      const res = await api.get("/owner/attendance");
-      setAttendance(res.data);
+      const studentsRes = await api.get("/owner/students");
+      const coursesRes = await api.get("/owner/courses");
+      const batchesRes = await api.get("/owner/batches");
+
+      setStudents(studentsRes.data);
+      setCourses(coursesRes.data);
+      setBatches(batchesRes.data);
     } catch (err) {
-      console.log("Attendance fetch error:", err.response?.data);
+      console.log("Attendance data fetch error:", err.response?.data);
     }
   };
 
   useEffect(() => {
-    fetchStudents();
-    fetchAttendance();
+    fetchInitialData();
   }, []);
 
-  const saveAttendance = async () => {
-    try {
-      for (const student of students) {
-        await api.post("/owner/attendance", {
-          studentId: student.id,
-          status: attendanceMap[student.id] ? "PRESENT" : "ABSENT",
-        });
-      }
+  const filteredBatches = batches.filter(
+    (b) => String(b.course?.id) === String(filters.courseId)
+  );
 
-      fetchAttendance();
+  const filteredStudents = students.filter(
+    (s) => String(s.batch?.id) === String(filters.batchId)
+  );
+
+  const fetchSavedAttendance = async (batchId = filters.batchId, date = filters.date) => {
+    if (!batchId || !date) return;
+
+    try {
+      const res = await api.get(`/owner/attendance/batch/${batchId}?date=${date}`);
+      setSavedAttendance(res.data);
+
+      const existingMap = {};
+      res.data.forEach((a) => {
+        existingMap[a.student?.id] = a.status === "PRESENT";
+      });
+
+      setAttendanceMap(existingMap);
     } catch (err) {
-      console.log("Save attendance error:", err.response?.data);
+      console.log("Saved attendance fetch error:", err.response?.data);
+    }
+  };
+
+  const handleFilterChange = async (e) => {
+    const { name, value } = e.target;
+
+    const updatedFilters = {
+      ...filters,
+      [name]: value,
+    };
+
+    if (name === "courseId") {
+      updatedFilters.batchId = "";
+      setSavedAttendance([]);
+      setAttendanceMap({});
+    }
+
+    setFilters(updatedFilters);
+
+    if (name === "batchId" && value) {
+      fetchSavedAttendance(value, updatedFilters.date);
+    }
+
+    if (name === "date" && updatedFilters.batchId) {
+      fetchSavedAttendance(updatedFilters.batchId, value);
+    }
+  };
+
+  const saveAttendance = async () => {
+    if (!filters.batchId) {
+      alert("Please select a batch first");
+      return;
+    }
+
+    if (filteredStudents.length === 0) {
+      alert("No students found in this batch");
+      return;
+    }
+
+    try {
+      const payload = filteredStudents.map((student) => ({
+        studentId: student.id,
+        batchId: Number(filters.batchId),
+        date: filters.date,
+        status: attendanceMap[student.id] ? "PRESENT" : "ABSENT",
+      }));
+
+      await api.post("/owner/attendance/bulk", payload);
+
+      fetchSavedAttendance(filters.batchId, filters.date);
+    } catch (err) {
+      console.log("Bulk attendance save error:", err.response?.data);
       alert("Attendance save nahi hui");
     }
   };
 
-  const presentCount = Object.values(attendanceMap).filter(Boolean).length;
-  const absentCount = students.length - presentCount;
+  const presentCount = filteredStudents.filter((s) => attendanceMap[s.id]).length;
+  const absentCount = filteredStudents.length - presentCount;
 
   return (
     <AdminPageLayout
       title="Attendance Management"
-      subtitle="Mark daily attendance and track saved attendance records."
+      subtitle="Select course and batch to mark daily attendance."
     >
+      <div className="attendance-filter-card">
+        <div className="section-title">
+          <h2>Attendance Filters</h2>
+          <p>Select course, batch and date before marking attendance.</p>
+        </div>
+
+        <div className="attendance-filter-grid">
+          <select
+            name="courseId"
+            value={filters.courseId}
+            onChange={handleFilterChange}
+          >
+            <option value="">Select Course</option>
+            {courses.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.courseName}
+              </option>
+            ))}
+          </select>
+
+          <select
+            name="batchId"
+            value={filters.batchId}
+            onChange={handleFilterChange}
+            disabled={!filters.courseId}
+          >
+            <option value="">Select Batch</option>
+            {filteredBatches.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.batchName} - {b.timing}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="date"
+            name="date"
+            value={filters.date}
+            onChange={handleFilterChange}
+          />
+
+          <button type="button" className="primary-action" onClick={saveAttendance}>
+            Save Attendance
+          </button>
+        </div>
+      </div>
+
       <div className="attendance-stats-row">
         <div className="attendance-stat-card">
-          <p>Total Students</p>
-          <h2>{students.length}</h2>
+          <p>Batch Students</p>
+          <h2>{filteredStudents.length}</h2>
         </div>
 
         <div className="attendance-stat-card present">
@@ -73,20 +188,20 @@ export default function Attendance() {
 
         <div className="attendance-stat-card">
           <p>Saved Records</p>
-          <h2>{attendance.length}</h2>
+          <h2>{savedAttendance.length}</h2>
         </div>
       </div>
 
       <div className="attendance-table-card">
         <div className="table-header">
           <div>
-            <h2>Mark Today Attendance</h2>
-            <p>Select present students and save attendance for today.</p>
+            <h2>Mark Batch Attendance</h2>
+            <p>
+              {filters.batchId
+                ? "Toggle present students and save attendance."
+                : "Please select a course and batch to view students."}
+            </p>
           </div>
-
-          <button type="button" className="primary-action" onClick={saveAttendance}>
-            Save Attendance
-          </button>
         </div>
 
         <table className="premium-table">
@@ -102,7 +217,7 @@ export default function Attendance() {
           </thead>
 
           <tbody>
-            {students.map((s) => (
+            {filteredStudents.map((s) => (
               <tr key={s.id}>
                 <td>{s.name}</td>
                 <td>{s.email}</td>
@@ -127,9 +242,9 @@ export default function Attendance() {
               </tr>
             ))}
 
-            {students.length === 0 && (
+            {filteredStudents.length === 0 && (
               <tr>
-                <td colSpan="6">No students found</td>
+                <td colSpan="6">No students found for selected batch</td>
               </tr>
             )}
           </tbody>

@@ -9,6 +9,7 @@ export default function Students() {
   const [batches, setBatches] = useState([]);
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState(null);
+  const [photoFile, setPhotoFile] = useState(null);
 
   const emptyForm = {
     name: "",
@@ -19,6 +20,7 @@ export default function Students() {
     paidFees: "",
     courseId: "",
     batchId: "",
+    
   };
 
   const [form, setForm] = useState(emptyForm);
@@ -65,15 +67,16 @@ export default function Students() {
   };
 
   const resetForm = () => {
-    setForm(emptyForm);
-    setEditingId(null);
-  };
+  setForm(emptyForm);
+  setEditingId(null);
+  setPhotoFile(null);
+};
 
   const addStudent = async (e) => {
     e.preventDefault();
 
     try {
-      await api.post("/owner/students", {
+      const res = await api.post("/owner/students", {
         name: form.name,
         email: form.email,
         phone: form.phone,
@@ -84,6 +87,21 @@ export default function Students() {
         batchId: Number(form.batchId),
       });
 
+      if (photoFile) {
+        const photoData = new FormData();
+
+        photoData.append("file", photoFile);
+
+        await api.post(
+          `/owner/students/${res.data.id}/photo`,
+          photoData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      }
       resetForm();
       fetchStudents();
     } catch (err) {
@@ -109,6 +127,7 @@ export default function Students() {
 
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+ 
 
   const updateStudent = async (e) => {
     e.preventDefault();
@@ -176,7 +195,61 @@ export default function Students() {
   const filteredBatches = batches.filter(
     (b) => String(b.course?.id) === String(form.courseId)
   );
+  const sendWhatsAppReminder = (student) => {
 
+  const message =
+`Dear Parent,
+
+This is a reminder that the pending fee for ${student.name} is ₹${student.remainingFees}.
+
+Please submit the fee at your earliest convenience.
+
+Regards,
+${student.institute?.instituteName || "Coaching Institute"}`;
+
+  const url =
+`https://wa.me/91${student.parentPhone}?text=${encodeURIComponent(message)}`;
+
+  window.open(url, "_blank");
+};
+
+
+  const exportStudentsExcel = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      "http://localhost:8080/api/owner/students/export",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      alert("Export failed");
+      return;
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "students.xlsx";
+    document.body.appendChild(a);
+    a.click();
+
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error(error);
+    alert("Export failed");
+  }
+
+};
   return (
     <AdminPageLayout
       title="Students Management"
@@ -295,6 +368,12 @@ export default function Students() {
               </option>
             ))}
           </select>
+          
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setPhotoFile(e.target.files[0])}
+          />
         </div>
 
         <div className="form-actions">
@@ -312,11 +391,12 @@ export default function Students() {
 
       <div className="student-table-card">
         <div className="table-header">
-          <div>
-            <h2>Student Records</h2>
-            <p>Search, edit and manage all students.</p>
-          </div>
+        <div>
+          <h2>Student Records</h2>
+          <p>Search, edit and manage all students.</p>
+        </div>
 
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
           <input
             className="student-search"
             type="text"
@@ -324,11 +404,21 @@ export default function Students() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+
+          <button
+            type="button"
+            className="primary-action"
+            onClick={exportStudentsExcel}
+          >
+            Export Excel
+          </button>
         </div>
+      </div>
 
         <table className="premium-table">
           <thead>
             <tr>
+              <th>Photo</th>
               <th>Name</th>
               <th>Email</th>
               <th>Phone</th>
@@ -344,41 +434,66 @@ export default function Students() {
           <tbody>
             {filteredStudents.map((s) => (
               <tr key={s.id}>
-                <td>{s.name}</td>
-                <td>{s.email}</td>
-                <td>{s.phone}</td>
-                <td>{s.parentPhone}</td>
-                <td>₹{s.totalFees}</td>
-                <td>₹{s.paidFees}</td>
-                <td className="pending">₹{s.remainingFees}</td>
-                <td>
-                  <span className={`fee-status ${s.feeStatus?.toLowerCase()}`}>
-                    {s.feeStatus}
-                  </span>
-                </td>
-                <td className="table-actions">
-                  <button
-                    type="button"
-                    className="edit-action"
-                    onClick={() => editStudent(s)}
-                  >
-                    Edit
-                  </button>
 
-                  <button
-                    type="button"
-                    className="danger-action"
-                    onClick={() => deleteStudent(s.id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
+  <td>
+    {s.photoUrl ? (
+      <img
+        src={`http://localhost:8080${s.photoUrl}`}
+        alt={s.name}
+        className="student-photo"
+      />
+    ) : (
+      "No Photo"
+    )}
+  </td>
+
+  <td>{s.name}</td>
+  <td>{s.email}</td>
+  <td>{s.phone}</td>
+  <td>{s.parentPhone}</td>
+  <td>₹{s.totalFees}</td>
+  <td>₹{s.paidFees}</td>
+  <td className="pending">₹{s.remainingFees}</td>
+
+  <td>
+    <span className={`fee-status ${s.feeStatus?.toLowerCase()}`}>
+      {s.feeStatus}
+    </span>
+  </td>
+
+  <td className="table-actions">
+    <button
+      type="button"
+      className="edit-action"
+      onClick={() => editStudent(s)}
+    >
+      Edit
+    </button>
+
+    <button
+      type="button"
+      className="danger-action"
+      onClick={() => deleteStudent(s.id)}
+    >
+      Delete
+    </button>
+   
+<button
+  type="button"
+  className="edit-action"
+  onClick={() => sendWhatsAppReminder(s)}
+>
+  WhatsApp
+</button>
+  </td>
+
+</tr>
+              
             ))}
 
             {filteredStudents.length === 0 && (
               <tr>
-                <td colSpan="9">No students found</td>
+                <td colSpan="10">No students found</td>
               </tr>
             )}
           </tbody>
