@@ -14,9 +14,7 @@ export default function AdminPageLayout({ title, subtitle, children }) {
             <span>{subtitle}</span>
           </div>
 
-          <div className="admin-header-pill">
-            Live System
-          </div>
+          
         </div>
 
         {children}
